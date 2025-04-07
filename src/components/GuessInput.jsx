@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 
-const GuessInput = ({setGuess, attempts, setAttempts}) => {
+const GuessInput = ({setGuess, attempts, setAttempts, gameWon, attemptsExhausted}) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleSubmit = (e) => {
@@ -20,6 +20,7 @@ const GuessInput = ({setGuess, attempts, setAttempts}) => {
     return (
         <form onSubmit={handleSubmit}>
             <input
+                disabled={attemptsExhausted || gameWon}
                 className="text-center border"
                 type="text"
                 value={inputValue}
