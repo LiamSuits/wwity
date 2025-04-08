@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import GuessInput from "./components/GuessInput.jsx";
 
 const App = () => {
-    const [guess, setGuess] = useState('');
-
     const [attempts, setAttempts] = useState(() => {
         const savedAttempts = localStorage.getItem('attempts');
         if (savedAttempts === null) {
@@ -14,10 +12,10 @@ const App = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('attempts', JSON.stringify(attempts));
         if (attempts.length >= 5) {
-            setAttemptsExhausted(true); // If there's more than 5 attempts, set the this flag to true
+            setAttemptsExhausted(true); // If there's more than 5 attempts, set this flag to true
         }
+        localStorage.setItem('attempts', JSON.stringify(attempts));
     }, [attempts]); // When the attempts array is updated, add the new array to localStorage
 
     const [gameWon, setGameWon] = useState(() => {
@@ -46,8 +44,10 @@ const App = () => {
         localStorage.setItem('attemptsExhausted', JSON.stringify(attemptsExhausted));
     }, [attemptsExhausted]);
 
-    const baseballSolution = 'Albert Pujols';
+    const award = 'National League MVP';
+    const year = '2008';
 
+    const baseballSolution = 'Albert Pujols';
     const baseballClues = {
         age: 28,
         position: '1st Base',
@@ -55,40 +55,56 @@ const App = () => {
         team: 'St. Louis Cardinals'
     }
 
+    const ageClue = baseballClues.age + ' years old';
+    const positionClue = 'Played ' + baseballClues.position;
+    const statlineClue = 'Had ' + baseballClues.statline;
+    const teamClue = 'Played for the ' + baseballClues.team;
+
+    // Style Logic
+    const containerRef = useRef(null);
+    const [height, setHeight] = useState('auto'); // Start with 'auto' height
+
     useEffect(() => {
-        if (guess === baseballSolution){
-            setGameWon(true);
+        // Recalculate height when attempts array changes
+        if (containerRef.current) {
+            // Set the height based on the scrollHeight of the container
+            setHeight(`${containerRef.current.scrollHeight}px`);
         }
-    }, [guess]);
+    }, [attempts]); // Run effect when the 'attempts' array changes
 
     return (
-        <div className="flex flex-col justify-center items-center mt-20">
-            <div className="mb-5 font-bold">Who Won It That Year?</div>
-            <div>National League MVP</div>
-            <div>2008</div>
-            {attempts.length > 0 && (
-                <div>{baseballClues.age}</div>
+        <div className="flex flex-col justify-center items-center mt-20 text-center">
+            <div className="font-bold">Who Won It That Year?</div>
+            <div className="font-bold mt-5">In {year}:</div>
+            <div id="question" className="justify-center transition-all duration-500 ease-in-out overflow-hidden border-2 p-2 rounded-md mb-5 w-65"
+                 style={{height}} ref={containerRef}>
+                {award}
+                {attempts.length > 0 && (<div>{ageClue}</div>)}
+                {attempts.length > 1 && (<div>{positionClue}</div>)}
+                {attempts.length > 2 && (<div>{statlineClue}</div>)}
+                {attempts.length > 3 && (<div>{teamClue}</div>)}
+            </div>
+            <div>
+                <ul>
+                    {attempts.map((attempt, index) => (
+                        <li key={index}>
+                            <div>
+                                {attempt}
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+                {gameWon && (
+                    <div className="text-green-500">
+                        {baseballSolution}
+                    </div>
+                )}
+            </div>
+            { attempts.length < 5 && !gameWon &&  (
+                <GuessInput attempts={attempts} setAttempts={setAttempts} gameWon={gameWon}
+                            setGameWon={setGameWon} attemptsExhausted={attemptsExhausted}
+                            baseballSolution={baseballSolution}/>
             )}
-            {attempts.length > 1 && (
-                <div>{baseballClues.position}</div>
-            )}
-            {attempts.length > 2 && (
-                <div>{baseballClues.statline}</div>
-            )}
-            {attempts.length > 3 && (
-                <div>{baseballClues.team}</div>
-            )}
-            <GuessInput setGuess={setGuess} attempts={attempts} setAttempts={setAttempts}
-                        gameWon={gameWon} attemptsExhausted={attemptsExhausted} />
-            <ul>
-                {attempts.map((attempt, index) => (
-                    <li key={index}>
-                        <div className="text-center">
-                            {attempt}
-                        </div>
-                    </li>
-                ))}
-            </ul>
         </div>
 )
 }

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 
-const GuessInput = ({setGuess, attempts, setAttempts, gameWon, attemptsExhausted}) => {
+const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhausted, baseballSolution}) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleSubmit = (e) => {
@@ -12,8 +12,11 @@ const GuessInput = ({setGuess, attempts, setAttempts, gameWon, attemptsExhausted
         const alreadyGuessed = attempts.includes(trimmedInput);
         if (alreadyGuessed) return; // ignore dupes
 
-        setGuess(inputValue); // Update the guess state with submitted value
-        setAttempts(prevAttempts => [ inputValue, ...prevAttempts,]); // Add this guess to the list of attempts
+        if (trimmedInput === baseballSolution){
+            setGameWon(true);
+        } else {
+            setAttempts(prevAttempts => [ ...prevAttempts, inputValue]); // Add this guess to the list of attempts
+        }
         setInputValue(''); // Clear the input field
     };
 
@@ -21,11 +24,12 @@ const GuessInput = ({setGuess, attempts, setAttempts, gameWon, attemptsExhausted
         <form onSubmit={handleSubmit}>
             <input
                 disabled={attemptsExhausted || gameWon}
-                className="text-center border"
+                className="text-center border-0 border-b-2 border-black
+                focus:outline-none focus:ring-0 w-55 mt-5"
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="???"
+                placeholder="Who do you think won it?"
             />
         </form>
     )
