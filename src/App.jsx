@@ -76,7 +76,7 @@ const App = () => {
         <div className="flex flex-col justify-center items-center mt-20 text-center">
             <div className="font-bold">Who Won It That Year?</div>
             <div className="font-bold mt-5">In {year}:</div>
-            <div id="question" className="justify-center transition-all duration-500 ease-in-out overflow-hidden border-2 p-2 rounded-md mb-5 w-65"
+            <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-3 rounded-md mb-5 w-65"
                  style={{height}} ref={containerRef}>
                 {award}
                 {attempts.length > 0 && (<div>{ageClue}</div>)}
@@ -84,20 +84,16 @@ const App = () => {
                 {attempts.length > 2 && (<div>{statlineClue}</div>)}
                 {attempts.length > 3 && (<div>{teamClue}</div>)}
             </div>
-            <div>
+            <div className="text-left">
                 <ul>
                     {attempts.map((attempt, index) => (
                         <li key={index}>
-                            <div>
-                                {attempt}
-                            </div>
+                            <div>❌ {attempt}</div>
                         </li>
                     ))}
                 </ul>
                 {gameWon && (
-                    <div className="text-green-500">
-                        {baseballSolution}
-                    </div>
+                    <div>✔ {baseballSolution}</div>
                 )}
             </div>
             { attempts.length < 5 && !gameWon &&  (
