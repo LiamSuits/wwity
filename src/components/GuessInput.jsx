@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 
-const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhausted, baseballSolution}) => {
+const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhausted, solution}) => {
     const [inputValue, setInputValue] = useState('');
 
     // This function returns true if the guess is within one character of the answer
@@ -57,7 +57,7 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
         const alreadyGuessed = attempts.includes(trimmedInput);
         if (alreadyGuessed) return; // ignore dupes
 
-        if (checkGuess(trimmedInput.toString(), baseballSolution.toString())) {
+        if (checkGuess(trimmedInput.toString(), solution.toString())) {
             setGameWon(true);
         } else {
             setAttempts(prevAttempts => [ ...prevAttempts, inputValue]); // Add this guess to the list of attempts

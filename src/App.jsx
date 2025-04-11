@@ -1,7 +1,40 @@
 import React, {useEffect, useRef, useState} from 'react'
 import GuessInput from "./components/GuessInput.jsx";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import {db} from "./config/firestore.jsx";
 
 const App = () => {
+    const getWinnerByGameDate = async (gamedate) => {
+        try {
+            const winnersRef = collection(db, "winners");
+            const q = query(winnersRef, where("gamedate", "==", gamedate));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                console.log("Something went wrong, couldn't find the game for today.");
+                return null;
+            }
+            // Only getting one doc
+            const doc = querySnapshot.docs[0];
+            return { id: doc.id, ...doc.data() };
+
+        } catch (error) {
+            console.error("Error fetching game.", error);
+            return null;
+        }
+    };
+
+    const today = '4/11/2025';
+
+    const [winner, setWinner] = useState(null);
+    useEffect(() => {
+        const fetchWinner = async () => {
+            const result = await getWinnerByGameDate(today);
+            setWinner(result);
+        };
+        fetchWinner();
+    }, []);
+
     const [attempts, setAttempts] = useState(() => {
         const savedAttempts = localStorage.getItem('attempts');
         if (savedAttempts === null) {
@@ -44,22 +77,6 @@ const App = () => {
         localStorage.setItem('attemptsExhausted', JSON.stringify(attemptsExhausted));
     }, [attemptsExhausted]);
 
-    const award = 'National League MVP';
-    const year = '2008';
-
-    const baseballSolution = 'Albert Pujols';
-    const baseballClues = {
-        age: 28,
-        position: '1st Base',
-        statline: '.357/.462/.653 37HR 44SB',
-        team: 'St. Louis Cardinals'
-    }
-
-    const ageClue = baseballClues.age + ' years old';
-    const positionClue = 'Played ' + baseballClues.position;
-    const statlineClue = 'Had ' + baseballClues.statline;
-    const teamClue = 'Played for the ' + baseballClues.team;
-
     // Style Logic
     const containerRef = useRef(null);
     const [height, setHeight] = useState('auto'); // Start with 'auto' height
@@ -72,35 +89,37 @@ const App = () => {
         }
     }, [attempts]); // Run effect when the 'attempts' array changes
 
+    if (winner === null) return <p>Loading...</p>;
+
     return (
         <div className="flex flex-col justify-center items-center mt-20 text-center">
             <div className="font-bold">Who Won It That Year?</div>
-            <div className="font-bold mt-5">In {year}:</div>
-            <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-3 rounded-md mb-5 w-65"
+            <div className="font-bold mt-5">In {winner.year}:</div>
+            <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-2.5 rounded-md mb-5 w-65"
                  style={{height}} ref={containerRef}>
-                {award}
-                {attempts.length > 0 && (<div>{ageClue}</div>)}
-                {attempts.length > 1 && (<div>{statlineClue}</div>)}
-                {attempts.length > 2 && (<div>{positionClue}</div>)}
-                {attempts.length > 3 && (<div>{teamClue}</div>)}
+                {winner.award}
+                {attempts.length > 0 && (<div>Was {winner.age} years old</div>)}
+                {attempts.length > 1 && (<div>Had {winner.statline}</div>)}
+                {attempts.length > 2 && (<div>Played {winner.position}</div>)}
+                {attempts.length > 3 && (<div>Played for the {winner.team}</div>)}
             </div>
-            <div className="text-left">
+            <div>
                 <ul>
                     {attempts.map((attempt, index) => (
                         <li key={index}>
-                            <div>❌ {attempt}</div>
+                            <div>❌ {attempt} ❌</div>
                         </li>
                     ))}
                 </ul>
                 {gameWon && (
-                    <div>✅ {baseballSolution}</div>
+                    <div>✅ {winner.solution} ✅</div>
                 )}
             </div>
             <div className="mt-5">
                 {attemptsExhausted && !gameWon && (
                     <div >
                         Sorry, you didn't know who won it that year.<br/>
-                        The answer was {baseballSolution}.
+                        The answer was {winner.solution}.
                     </div>
                 )}
                 {gameWon && (
@@ -111,7 +130,7 @@ const App = () => {
                 { attempts.length < 5 && !gameWon &&  (
                     <GuessInput attempts={attempts} setAttempts={setAttempts} gameWon={gameWon}
                                 setGameWon={setGameWon} attemptsExhausted={attemptsExhausted}
-                                baseballSolution={baseballSolution}/>
+                                solution={winner.solution}/>
                 )}
             </div>
         </div>
