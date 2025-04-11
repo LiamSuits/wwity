@@ -9,15 +9,25 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
         const guessLower = guess.toLowerCase();
         const answerLower = answer.toLowerCase();
         // Ensure that the lengths do not differ by more than one
-        if (Math.abs(guessLower.length - answerLower.length) > 1) return false;
+        if (Math.abs(guessLower.length - answerLower.length) > 1){
+            return false;
+        }
 
         let diffs = 0;
-        let g = 0, a = 0;
+        let g = 0;
+        let a = 0;
+
+        // Check for an extra character
+        if (guessLower.length !== answerLower.length){
+            diffs++;
+        }
 
         while (g < guessLower.length && a < answerLower.length) {
             if (guessLower[g] !== answerLower[a]) {
                 diffs++;
-                if (diffs > 1) return false;
+                if (diffs > 1){
+                    return false;
+                }
                 // Handle longer and shorter cases
                 if (guessLower.length > answerLower.length) {
                     // There's an extra character in the guess, so just increase the guess index
@@ -34,9 +44,6 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
                 a++;
             }
         }
-
-        // Account for any trailing character
-        if (g < guessLower.length || a < answerLower.length) diffs++;
 
         return diffs <= 1;
     }
@@ -63,7 +70,7 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
             <input
                 disabled={attemptsExhausted || gameWon}
                 className="text-center border-0 border-b-2 border-black
-                focus:outline-none focus:ring-0 w-55 mt-5"
+                focus:outline-none focus:ring-0 w-55"
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}

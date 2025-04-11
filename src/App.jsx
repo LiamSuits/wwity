@@ -80,8 +80,8 @@ const App = () => {
                  style={{height}} ref={containerRef}>
                 {award}
                 {attempts.length > 0 && (<div>{ageClue}</div>)}
-                {attempts.length > 1 && (<div>{positionClue}</div>)}
-                {attempts.length > 2 && (<div>{statlineClue}</div>)}
+                {attempts.length > 1 && (<div>{statlineClue}</div>)}
+                {attempts.length > 2 && (<div>{positionClue}</div>)}
                 {attempts.length > 3 && (<div>{teamClue}</div>)}
             </div>
             <div className="text-left">
@@ -93,14 +93,27 @@ const App = () => {
                     ))}
                 </ul>
                 {gameWon && (
-                    <div>✔ {baseballSolution}</div>
+                    <div>✅ {baseballSolution}</div>
                 )}
             </div>
-            { attempts.length < 5 && !gameWon &&  (
-                <GuessInput attempts={attempts} setAttempts={setAttempts} gameWon={gameWon}
-                            setGameWon={setGameWon} attemptsExhausted={attemptsExhausted}
-                            baseballSolution={baseballSolution}/>
-            )}
+            <div className="mt-5">
+                {attemptsExhausted && !gameWon && (
+                    <div >
+                        Sorry, you didn't know who won it that year.<br/>
+                        The answer was {baseballSolution}.
+                    </div>
+                )}
+                {gameWon && (
+                    <div >
+                        Nice work, you know ball.
+                    </div>
+                )}
+                { attempts.length < 5 && !gameWon &&  (
+                    <GuessInput attempts={attempts} setAttempts={setAttempts} gameWon={gameWon}
+                                setGameWon={setGameWon} attemptsExhausted={attemptsExhausted}
+                                baseballSolution={baseballSolution}/>
+                )}
+            </div>
         </div>
 )
 }
