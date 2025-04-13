@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 import GuessInput from "./components/GuessInput.jsx";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import {db} from "./config/firestore.jsx";
+import {db} from "./config/firestore.js";
 
 const App = () => {
     const getWinnerByGameDate = async (gamedate) => {
@@ -24,12 +24,12 @@ const App = () => {
         }
     };
 
-    const today = '4/11/2025';
-
     const [winner, setWinner] = useState(null);
     useEffect(() => {
+        const today = new Date();
+        const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
         const fetchWinner = async () => {
-            const result = await getWinnerByGameDate(today);
+            const result = await getWinnerByGameDate(todayFormatted);
             setWinner(result);
         };
         fetchWinner();
