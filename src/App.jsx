@@ -77,17 +77,21 @@ const App = () => {
         localStorage.setItem('attemptsExhausted', JSON.stringify(attemptsExhausted));
     }, [attemptsExhausted]);
 
-    // Style Logic
+    // Store height in localStorage to reuse later
     const containerRef = useRef(null);
-    const [height, setHeight] = useState('auto'); // Start with 'auto' height
+    const [height, setHeight] = useState(() => {
+        const savedHeight = localStorage.getItem('height');
+        return savedHeight ? `${savedHeight}px` : '42px';
+    });
 
     useEffect(() => {
-        // Recalculate height when attempts array changes
         if (containerRef.current) {
-            // Set the height based on the scrollHeight of the container
-            setHeight(`${containerRef.current.scrollHeight}px`);
+            const currentHeight = containerRef.current.scrollHeight;
+            // Save height to localStorage to reuse on further renders
+            localStorage.setItem('height', currentHeight);
+            setHeight(`${currentHeight}px`);
         }
-    }, [attempts]); // Run effect when the 'attempts' array changes
+    }, [attempts]);
 
     if (winner === null) return <p>Loading...</p>;
 
@@ -97,7 +101,7 @@ const App = () => {
             <div className="font-bold mt-5">In {winner.year}:</div>
             <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-2.5 rounded-md mb-5 w-65"
                  style={{height}} ref={containerRef}>
-                {winner.award}
+                Won the {winner.award}
                 {attempts.length > 0 && (<div>Was {winner.age} years old</div>)}
                 {attempts.length > 1 && (<div>Had {winner.statline}</div>)}
                 {attempts.length > 2 && (<div>Played {winner.position}</div>)}
