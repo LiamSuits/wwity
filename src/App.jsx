@@ -28,6 +28,12 @@ const App = () => {
     useEffect(() => {
         const today = new Date();
         const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+        const lastVisit = localStorage.getItem('lastVisitDate');
+        if (lastVisit !== todayFormatted) {
+            // New day detected, clear storage
+            localStorage.clear();
+            localStorage.setItem('lastVisitDate', todayFormatted);
+        }
         const fetchWinner = async () => {
             const result = await getWinnerByGameDate(todayFormatted);
             setWinner(result);
