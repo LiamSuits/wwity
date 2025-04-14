@@ -29,10 +29,14 @@ const App = () => {
         const today = new Date();
         const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
         const lastVisit = localStorage.getItem('lastVisitDate');
-        if (lastVisit !== todayFormatted) {
-            // New day detected, clear storage
+        if (lastVisit === null || lastVisit !== todayFormatted) {
+            // New day detected, clear storage and reset the game
             localStorage.clear();
             localStorage.setItem('lastVisitDate', todayFormatted);
+            setAttemptsExhausted(false);
+            setGameWon(false);
+            setAttempts([]);
+            setHeight('42px');
         }
         const fetchWinner = async () => {
             const result = await getWinnerByGameDate(todayFormatted);
