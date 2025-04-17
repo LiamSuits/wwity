@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react'
 import GuessInput from "./components/GuessInput.jsx";
+import Toast from "./components/Toast.jsx";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {db} from "./config/firestore.js";
 
@@ -103,10 +104,35 @@ const App = () => {
         }
     }, [attempts]);
 
+    const gameLink = "https://who-won-it-that-year.web.app"
+    const [showToast, setShowToast] = useState(false);
+    const handleCopy = (e) => {
+        e.preventDefault(); // prevent link navigation
+        let shareText;
+        const guesses = attempts.length + 1;
+        const awardText = winner.year + " " + winner.award;
+        if (!gameWon) {
+            shareText = "I didn't know who won the " + awardText + " 😢"
+            + "\n\nYou can try here:" + "\n" + gameLink;
+        } else {
+            shareText = "I knew who won the " + awardText
+                + " in " + guesses + (guesses === 1 ? " guess! 😎" : " guesses! 😎")
+                + "\n\nYou can try here:" + "\n" + gameLink;
+        }
+        navigator.clipboard.writeText(shareText).then(() => {
+            setShowToast(true);
+        }).catch(err => {
+            console.error("Failed to copy: ", err);
+        });
+    };
+
     if (winner === null) return <p>Loading...</p>;
 
     return (
         <div className="flex flex-col justify-center items-center mt-20 text-center">
+            {showToast && (
+                <Toast message="Copied to clipboard!" onClose={() => setShowToast(false)} />
+            )}
             <div className="font-bold">Who Won It That Year?</div>
             <div className="font-bold mt-5">In {winner.year}:</div>
             <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-2.5 rounded-md mb-5 w-65"
@@ -131,14 +157,25 @@ const App = () => {
             </div>
             <div className="mt-5">
                 {attemptsExhausted && !gameWon && (
-                    <div >
-                        Sorry, you didn't know who won it that year.<br/>
-                        The answer was {winner.solution}.
+                    <div>
+                        <div>
+                            Sorry, you didn't know who won it that year.<br/>
+                            The answer was {winner.solution}.
+                        </div>
                     </div>
                 )}
                 {gameWon && (
-                    <div >
+                    <div>
                         Nice work, you know ball.
+                    </div>
+                )}
+                {(gameWon || attemptsExhausted) && (
+                    <div>
+                        <a href="#"
+                           className="text-blue-600 underline hover:text-blue-800 hover:no-underline"
+                           onClick={handleCopy}>
+                            Share Result
+                        </a>
                     </div>
                 )}
                 { attempts.length < 5 && !gameWon &&  (
