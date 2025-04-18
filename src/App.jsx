@@ -28,13 +28,23 @@ const App = () => {
         }
     };
 
-    const [winner, setWinner] = useState(null);
+    const [winner, setWinner] = useState(() => {
+        const storedWinner = localStorage.getItem('winner');
+        return storedWinner ? JSON.parse(storedWinner) : null;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('winner', JSON.stringify(winner));
+    }, [winner]);
+
     useEffect(() => {
         const today = new Date();
         const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
         const lastVisit = localStorage.getItem('lastVisitDate');
+        let newDay = false;
         if (lastVisit === null || lastVisit !== todayFormatted) {
             // New day detected, clear storage and reset the game
+            newDay = true;
             localStorage.clear();
             localStorage.setItem('lastVisitDate', todayFormatted);
             setAttemptsExhausted(false);
@@ -46,7 +56,9 @@ const App = () => {
             const result = await getWinnerByGameDate(todayFormatted);
             setWinner(result);
         };
-        fetchWinner();
+        if (newDay || winner === null) {
+            fetchWinner();
+        }
     }, []);
 
     const [attempts, setAttempts] = useState(() => {
