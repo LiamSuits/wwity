@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function Toast({ message, onClose }) {
+const Toast = ({ message, onClose }) => {
     const [fadeout, setFadeOut] = useState(false);
 
     useEffect(() => {
@@ -25,3 +25,5 @@ export default function Toast({ message, onClose }) {
         </div>
     );
 }
+
+export default Toast

@@ -1,8 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import GuessInput from "./components/GuessInput.jsx";
 import Toast from "./components/Toast.jsx";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {db} from "./config/firestore.js";
+import {QuestionBox} from "./components/QuestionBox.jsx";
+import Guesses from "./components/Guesses.jsx";
+import EndGame from "./components/EndGame.jsx";
 
 const App = () => {
     const getWinnerByGameDate = async (gamedate) => {
@@ -37,7 +40,7 @@ const App = () => {
             setAttemptsExhausted(false);
             setGameWon(false);
             setAttempts([]);
-            setHeight('42px');
+            setQuestionBoxHeight('42px');
         }
         const fetchWinner = async () => {
             const result = await getWinnerByGameDate(todayFormatted);
@@ -75,6 +78,11 @@ const App = () => {
         localStorage.setItem('gameWon', JSON.stringify(gameWon));
     }, [gameWon]);
 
+    const [questionBoxHeight, setQuestionBoxHeight] = useState(() => {
+        const savedHeight = localStorage.getItem('height');
+        return savedHeight ? `${savedHeight}px` : '42px';
+    });
+
     const [attemptsExhausted, setAttemptsExhausted] = useState(() => {
         const savedAttemptsExhausted = localStorage.getItem('attemptsExhausted');
         if (savedAttemptsExhausted === null) {
@@ -88,43 +96,7 @@ const App = () => {
         localStorage.setItem('attemptsExhausted', JSON.stringify(attemptsExhausted));
     }, [attemptsExhausted]);
 
-    // Store height in localStorage to reuse later
-    const containerRef = useRef(null);
-    const [height, setHeight] = useState(() => {
-        const savedHeight = localStorage.getItem('height');
-        return savedHeight ? `${savedHeight}px` : '42px';
-    });
-
-    useEffect(() => {
-        if (containerRef.current) {
-            const currentHeight = containerRef.current.scrollHeight;
-            // Save height to localStorage to reuse on further renders
-            localStorage.setItem('height', currentHeight);
-            setHeight(`${currentHeight}px`);
-        }
-    }, [attempts]);
-
-    const gameLink = "https://who-won-it-that-year.web.app"
     const [showToast, setShowToast] = useState(false);
-    const handleCopy = (e) => {
-        e.preventDefault(); // prevent link navigation
-        let shareText;
-        const guesses = attempts.length + 1;
-        const awardText = winner.year + " " + winner.award;
-        if (!gameWon) {
-            shareText = "I didn't know who won the " + awardText + " 😢"
-            + "\n\nYou can try here:" + "\n" + gameLink;
-        } else {
-            shareText = "I knew who won the " + awardText
-                + " in " + guesses + (guesses === 1 ? " guess! 😎" : " guesses! 😎")
-                + "\n\nYou can try here:" + "\n" + gameLink;
-        }
-        navigator.clipboard.writeText(shareText).then(() => {
-            setShowToast(true);
-        }).catch(err => {
-            console.error("Failed to copy: ", err);
-        });
-    };
 
     if (winner === null) return <p>Loading...</p>;
 
@@ -135,54 +107,13 @@ const App = () => {
             )}
             <div className="font-bold">Who Won It That Year?</div>
             <div className="font-bold mt-5">In {winner.year}:</div>
-            <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-2.5 rounded-md mb-5 w-65"
-                 style={{height}} ref={containerRef}>
-                Won the {winner.award}
-                {attempts.length > 0 && (<div>Was {winner.age} years old</div>)}
-                {attempts.length > 1 && (<div>Had {winner.statline}</div>)}
-                {attempts.length > 2 && (<div>Played {winner.position}</div>)}
-                {attempts.length > 3 && (<div>Played for the {winner.team}</div>)}
-            </div>
-            <div>
-                <ul>
-                    {attempts.map((attempt, index) => (
-                        <li key={index}>
-                            <div>❌ {attempt} ❌</div>
-                        </li>
-                    ))}
-                </ul>
-                {gameWon && (
-                    <div>✅ {winner.solution} ✅</div>
-                )}
-            </div>
+            <QuestionBox attempts={attempts} height={questionBoxHeight} setHeight={setQuestionBoxHeight} winner={winner} />
+            <Guesses attempts={attempts} gameWon={gameWon} winner={winner} />
             <div className="mt-5">
-                {attemptsExhausted && !gameWon && (
-                    <div>
-                        <div>
-                            Sorry, you didn't know who won it that year.<br/>
-                            The answer was {winner.solution}.
-                        </div>
-                    </div>
-                )}
-                {gameWon && (
-                    <div>
-                        Nice work, you know ball.
-                    </div>
-                )}
-                {(gameWon || attemptsExhausted) && (
-                    <div>
-                        <a href="#"
-                           className="text-blue-600 underline hover:text-blue-800 hover:no-underline"
-                           onClick={handleCopy}>
-                            Share Result
-                        </a>
-                    </div>
-                )}
-                { attempts.length < 5 && !gameWon &&  (
-                    <GuessInput attempts={attempts} setAttempts={setAttempts} gameWon={gameWon}
-                                setGameWon={setGameWon} attemptsExhausted={attemptsExhausted}
-                                solution={winner.solution}/>
-                )}
+                <EndGame attemptsExhausted={attemptsExhausted} gameWon={gameWon} winner={winner} attempts={attempts}
+                         setShowToast={setShowToast} />
+                <GuessInput attempts={attempts} setAttempts={setAttempts} gameWon={gameWon} setGameWon={setGameWon}
+                            attemptsExhausted={attemptsExhausted} solution={winner.solution}/>
             </div>
         </div>
 )

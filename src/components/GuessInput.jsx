@@ -66,17 +66,21 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input
-                disabled={attemptsExhausted || gameWon}
-                className="text-center border-0 border-b-2 border-black
-                focus:outline-none focus:ring-0 w-55"
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Who do you think won it?"
-            />
-        </form>
+        <div>
+            { attempts.length < 5 && !gameWon &&  (
+                <form onSubmit={handleSubmit}>
+                    <input
+                        disabled={attemptsExhausted || gameWon}
+                        className="text-center border-0 border-b-2 border-black
+                        focus:outline-none focus:ring-0 w-55"
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Who do you think won it?"
+                    />
+                </form>
+            )}
+        </div>
     )
 }
 export default GuessInput
