@@ -9,7 +9,7 @@ import EndGame from "./components/EndGame.jsx";
 const App = () => {
     const today = new Date();
     const todayFormatted = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-    // const todayFormatted = '18/4/2025';
+    // const todayFormatted = '23/4/2025';
     const lastVisit = localStorage.getItem('lastVisitDate');
     let newDay = false;
     if (lastVisit === null || lastVisit !== todayFormatted) {
@@ -140,8 +140,14 @@ const App = () => {
                  style={{height: questionBoxHeight}} ref={containerRef}>
                 Won the {winner.award}
                 {attempts.length > 0 && (<div>Was {winner.age} years old</div>)}
-                {attempts.length > 1 && (<div>Had {winner.statline}</div>)}
-                {attempts.length > 2 && (<div>Played {winner.position}</div>)}
+                {attempts.length > 1 && (<div>Played in the {winner.conference}</div>)}
+                {attempts.length > 2 && (
+                    (winner.award === "Norris Trophy" || winner.award === "Vezina Trophy") ? (
+                        <div>{winner.success}</div>
+                    ) : (
+                        <div>Played {winner.position}</div>
+                    )
+                )}
                 {attempts.length > 3 && (<div>Played for the {winner.team}</div>)}
             </div>
             <Guesses attempts={attempts} gameWon={gameWon} winner={winner} />
