@@ -128,7 +128,11 @@ const App = () => {
 
     const [showToast, setShowToast] = useState(false);
 
-    if (winner === null || !hasLoaded) return <p>Loading...</p>;
+    if (winner === null || !hasLoaded) return (
+        <div className="flex flex-col justify-center items-center text-center bg-white mt-20">
+            <div className="text-6xl animate-pulse text-gray-800">?</div>
+        </div>
+    )
 
     return (
         <div className="flex flex-col justify-center items-center mt-20 text-center">
