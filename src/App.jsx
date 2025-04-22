@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import {db} from "./config/firestore.js";
 import Guesses from "./components/Guesses.jsx";
 import EndGame from "./components/EndGame.jsx";
+import Help from "./components/Help.jsx";
 
 const App = () => {
     const today = new Date();
@@ -134,6 +135,7 @@ const App = () => {
             {showToast && (
                 <Toast message="Copied to clipboard!" onClose={() => setShowToast(false)} />
             )}
+            <Help winner={winner}/>
             <div className="font-bold">Who Won It That Year?</div>
             <div className="font-bold mt-5">In {winner.year}:</div>
             <div id="question" className="transition-all duration-500 ease-in-out overflow-hidden border-2 pt-2 pb-2.5 rounded-md mb-5 w-65"
