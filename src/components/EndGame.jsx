@@ -1,7 +1,7 @@
 import React from 'react'
 
 const EndGame = ({attemptsExhausted, gameWon, winner, attempts, setShowToast}) => {
-    const gameLink = "https://who-won-it-that-year.web.app";
+    const gameLink = "https://wwity.com";
 
     const handleCopy = (e) => {
         e.preventDefault(); // prevent link navigation
