@@ -3,7 +3,9 @@ import React, {useState} from 'react'
 const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhausted, solution}) => {
     const [inputValue, setInputValue] = useState('');
 
+    // Check if the guess is correct, allowing a difference of one character
     function checkGuess(guess, answer){
+        // Ignore case
         const guessLower = guess.toLowerCase();
         const answerLower = answer.toLowerCase();
 
@@ -38,24 +40,25 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
         if (g < guessLower.length || a < answerLower.length) {
             diffs++;
         }
+
         return diffs <= 1;
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent page refresh
+        e.preventDefault();
 
         const trimmedInput = inputValue.trim();
-        if (trimmedInput === '') return;// ignore empty input
+        if (trimmedInput === '') return;
 
         const alreadyGuessed = attempts.includes(trimmedInput);
-        if (alreadyGuessed) return; // ignore dupes
+        if (alreadyGuessed) return;
 
         if (checkGuess(trimmedInput.toString(), solution.toString())) {
             setGameWon(true);
         } else {
-            setAttempts(prevAttempts => [ ...prevAttempts, inputValue]); // Add this guess to the list of attempts
+            setAttempts(prevAttempts => [ ...prevAttempts, inputValue]);
         }
-        setInputValue(''); // Clear the input field
+        setInputValue('');
     };
 
     return (

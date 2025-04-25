@@ -3,8 +3,7 @@ import React from 'react'
 const EndGame = ({attemptsExhausted, gameWon, winner, attempts, setShowToast}) => {
     const gameLink = "https://wwity.com";
 
-    const handleCopy = (e) => {
-        e.preventDefault(); // prevent link navigation
+    const handleCopy = () => {
         let shareText;
         const guesses = attempts.length + 1;
         const awardText = winner.year + " " + winner.award;
@@ -40,11 +39,11 @@ const EndGame = ({attemptsExhausted, gameWon, winner, attempts, setShowToast}) =
             )}
             {(gameWon || attemptsExhausted) && (
                 <div>
-                    <a href="#"
-                       className="text-blue-600 underline hover:text-blue-800 hover:no-underline"
+                    <button
+                       className="text-blue-600 underline hover:text-blue-800 hover:no-underline cursor-pointer"
                        onClick={handleCopy}>
                         Share Result
-                    </a>
+                    </button>
                 </div>
             )}
         </div>

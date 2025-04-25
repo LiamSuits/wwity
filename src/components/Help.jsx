@@ -19,7 +19,7 @@ const Help = ({winner}) => {
         "Rocket Richard Trophy": "The Rocket Richard Trophy is given to the player who leads the NHL in goals."
     }
 
-    // Close info box when clicking outside
+    // Close info box when clicking outside of it
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (infoRef.current && !infoRef.current.contains(event.target)) {
@@ -42,7 +42,7 @@ const Help = ({winner}) => {
         <div className="relative inline-block" ref={infoRef}>
             <button
                 className="fixed bottom-15 left-1/2 transform -translate-x-1/2 w-66 bg-gray-500 hover:bg-gray-400
-                text-white px-2 py-3 rounded-md shadow-lg"
+                text-white px-2 py-3 rounded-md shadow-lg cursor-pointer"
                 onClick={() => setIsOpen(!isOpen)}
             >
                 How do I play?

@@ -5,12 +5,12 @@ const Toast = ({ message, onClose }) => {
 
     useEffect(() => {
         const timer1 = setTimeout(() => {
-            setFadeOut(true); // trigger fade out
-        }, 700); // start fade-out before removing
+            setFadeOut(true);
+        }, 700);
 
         const timer2 = setTimeout(() => {
-            onClose(); // remove from DOM
-        }, 1000); // total time matches animation
+            onClose();
+        }, 1000);
 
         return () => {
             clearTimeout(timer1);
