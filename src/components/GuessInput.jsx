@@ -70,6 +70,9 @@ const GuessInput = ({attempts, setAttempts, gameWon, setGameWon, attemptsExhaust
                         className="text-center border-0 border-b-2 border-black
                         focus:outline-none focus:ring-0 w-55"
                         type="text"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        spellCheck={false}
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         placeholder="Who do you think won it?"
